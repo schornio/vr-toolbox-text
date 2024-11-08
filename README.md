@@ -21,3 +21,7 @@
 
 - The project uses Next.js 14 instead of the latest Next.js 15 because Next.js 14 relies on React 18, which provides greater stability with React-Three-Fiber compared to React 19 (used in Next.js 15).
 - It's recommended to review the [UI Kit Text component](https://pmndrs.github.io/uikit/docs/getting-started/components-and-properties#text) to understand a well-established community solution and identify potential enhancements we could incorporate.
+
+## First Steps
+
+- `npm run dev`: starts the application.
