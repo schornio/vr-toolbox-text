@@ -1,6 +1,5 @@
 import {Canvas, useThree} from '@react-three/fiber';
 import {Root, Container, Text, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
-import data from '@/src/assets/data/randomText.json';
 import { PointerEvents } from '@react-three/xr';
 import React from 'react';
 import { Separator, Accordion, AccordionContent, AccordionItem, AccordionTrigger, Tooltip, TooltipContent, TooltipTrigger } from '@react-three/uikit-default';
@@ -11,7 +10,7 @@ import TextBlock from '@/src/component/TextBlock';
 import ImageBlock from '@/src/component/ImageBlock';
 import Citation from '@/src/component/Citation';
 import ScrollableContainer from '@/src/component/ScrollableContainer';
-import dynamicTextLoader from '@/src/services/dynamicTextLoader';
+import dynamicTextLoader, {getRandomTextIndex} from '@/src/services/dynamicTextLoader';
 
 const textRef = React.createRef();
 const scrollRef = [
@@ -28,9 +27,6 @@ function ThreeState() {
 }
 
 export default function App() {
-  const getRandomTextIndex = () => {
-    return data ? Math.round(Math.random() * data.length) : 0;
-  };
 
   let [count, setCount] = React.useState(0);
   if (reloadCount === 0) {
@@ -41,56 +37,20 @@ export default function App() {
       }
     };
 
-    let index = 10;
-    displayData.push({
-      index: index,
-      text: data[index],
-      displayText: ''
-    });
-    dynamicTextLoader(index, (text) => {
-      displayData[0].displayText = text;
-      reloadText(text);
-    });
-    index = 3;
-    displayData.push({
-      index: index,
-      text: data[index],
-      displayText: ''
-    });
-    dynamicTextLoader(index, (text) => {
-      displayData[1].displayText = text;
-      reloadText(text);
-    });
-    index = 11;
-    displayData.push({
-      index: index,
-      text: data[index],
-      displayText: ''
-    });
-    dynamicTextLoader(index, (text) => {
-      displayData[2].displayText = text;
-      reloadText(text);
-    });
-    index = 6;
-    displayData.push({
-      index: index,
-      text: data[index],
-      displayText: ''
-    });
-    dynamicTextLoader(index, (text) => {
-      displayData[3].displayText = text;
-      reloadText(text);
-    });
-    index = getRandomTextIndex();
-    displayData.push({
-      index: index,
-      text: data[index],
-      displayText: ''
-    });
-    dynamicTextLoader(index, (text) => {
-      displayData[4].displayText = text;
-      reloadText(text);
-    });
+    const dynamicTextIndexList = [
+      10,
+      3,
+      11,
+      6,
+      getRandomTextIndex()
+    ];
+    for (let i = 0; i < dynamicTextIndexList.length; i++) {
+      displayData.push('');
+      dynamicTextLoader(dynamicTextIndexList[i], (text) => {
+        displayData[i] = text;
+        reloadText(text);
+      });
+    }
   }
   reloadCount++;
 
@@ -121,7 +81,7 @@ export default function App() {
                 <Separator />
                 <Citation>&#34;Citation text&#34;</Citation>
                 <Separator />
-                <TextBlock>{displayData[4].displayText}</TextBlock>
+                <TextBlock>{displayData[4]}</TextBlock>
               </ScrollableContainer>
               <ScrollableContainer
                 ref={scrollRef[1]}
@@ -168,7 +128,7 @@ export default function App() {
                     </TooltipContent>
                   </Tooltip>
                 </Container>
-                <TextBlock>{displayData[0].displayText}</TextBlock>
+                <TextBlock>{displayData[0]}</TextBlock>
               </ScrollableContainer>
             </Container>
             <ScrollableContainer
@@ -179,9 +139,9 @@ export default function App() {
               scrollToEnd={true}
             >
               <Container flexShrink={0} flexGrow={1} flexDirection="column" padding={10} gap={10} alignItems="flex-start" alignContent="flex-start">
-                <Heading>{displayData[2].displayText}</Heading>
-                <Subtitle>{displayData[3].displayText}</Subtitle>
-                <TextBlock ref={textRef}>{displayData[1].displayText}</TextBlock>
+                <Heading>{displayData[2]}</Heading>
+                <Subtitle>{displayData[3]}</Subtitle>
+                <TextBlock ref={textRef}>{displayData[1]}</TextBlock>
               </Container>
             </ScrollableContainer>
           </DefaultProperties>

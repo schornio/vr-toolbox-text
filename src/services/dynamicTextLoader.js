@@ -14,3 +14,7 @@ export default function dynamicTextLoader(index, updateCallback) {
 
   simulateTyping();
 }
+
+export const getRandomTextIndex = () => {
+  return data ? Math.round(Math.random() * data.length) : 0;
+};

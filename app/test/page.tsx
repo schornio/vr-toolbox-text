@@ -1,6 +1,6 @@
 'use client';
 
-import TextLayoutTest from '@/src/component/TextLayoutTest'
+import TextLayoutTest from '@/src/examples/TextLayoutTest'
 
 export default function Home() {
   return (
