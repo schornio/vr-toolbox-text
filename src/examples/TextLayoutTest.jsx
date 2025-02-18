@@ -4,6 +4,7 @@ import { PointerEvents } from '@react-three/xr';
 import React from 'react';
 import { Separator, Accordion, AccordionContent, AccordionItem, AccordionTrigger, Tooltip, TooltipContent, TooltipTrigger } from '@react-three/uikit-default';
 import BulletPointList from '@/src/component/BulletPointList';
+import OrderedList from '@/src/component/OrderedList';
 import Heading from '@/src/component/Heading';
 import Subtitle from '@/src/component/Subtitle';
 import TextBlock from '@/src/component/TextBlock';
@@ -78,6 +79,8 @@ export default function App() {
                 <Heading fontFamily="italic">Custom Font Test 123!</Heading>
                 <ImageBlock src="1694078376509.jpg" caption="Image Description"></ImageBlock>
                 <BulletPointList items={items} />
+                <Separator />
+                <OrderedList items={items} />
                 <Separator />
                 <Citation>&#34;Citation text&#34;</Citation>
                 <Separator />

@@ -1,48 +1,31 @@
 import {Canvas, useThree} from '@react-three/fiber';
-import {Root, Container, Text, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
+import {Root, Container, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
 import { PointerEvents } from '@react-three/xr';
 import React from 'react';
-import MultiColumnText from '@/src/component/MultiColumnText';
 import ScrollableContainer from '@/src/component/ScrollableContainer';
-import dynamicTextLoader from '@/src/services/dynamicTextLoader';
+import MarkdownParser from '@/src/component/MarkdownParser';
+
 
 let state = null;
-const displayData = [];
-let reloadCount = 0;
 
 function ThreeState() {
   state = useThree();
 }
 
 export default function App() {
-  let [count, setCount] = React.useState(0);
-  if (reloadCount === 0) {
-    const reloadText = (text) => {
-      if (count < text.length) {
-        count = text.length;
-        setCount(count);
-      }
-    };
-
-    const dynamicTextIndexList = [
-      10
-    ];
-    for (let i = 0; i < dynamicTextIndexList.length; i++) {
-      displayData.push('');
-      dynamicTextLoader(dynamicTextIndexList[i], (text) => {
-        displayData[i] = text;
-        reloadText(text);
-      });
-    }
-  }
-  reloadCount++;
-
   return (
     <Canvas style={{ position: "absolute", touchAction: 'none' }} gl={{ localClippingEnabled: true }}>
       <ThreeState />
       <PointerEvents />
       <Root backgroundColor="#42258d" sizeX={8} sizeY={6} flexDirection="row" borderRadius={10} padding={10} gap={10}>
-        <FontFamilyProvider inter={{ normal: 'inter-normal.json', bold: 'Inter_18pt-Bold-msdf.json', 'semi-bold': 'Inter_18pt-SemiBold-msdf.json' }} italic={{ normal: 'InterTight-Italic-msdf.json' }}>
+        <FontFamilyProvider
+          inter={{
+              normal: 'inter-normal.json',
+              bold: 'Inter_18pt-Bold-msdf.json',
+              'semi-bold': 'Inter_18pt-SemiBold-msdf.json'
+            }}
+            italic={{ normal: 'Inter_18pt-Italic-msdf.json' }}
+        >
           <DefaultProperties fontFamily="inter">
             <Container flexGrow={1} backgroundColor="#9a398d" flexDirection="row" padding={10} gap={10}>
               <ScrollableContainer
@@ -51,8 +34,13 @@ export default function App() {
                 backgroundOpacity={0.5}
                 padding={10}
                 flexDirection="row"
+                scrollToEnd={false}
               >
-                <MultiColumnText columnCount={3}>{displayData[0]}</MultiColumnText>
+                <MarkdownParser 
+                  markdown={
+                    "# Überschrift\n## Unterüberschrift\nNormaler Text hier. I just love **bold text**. Und noch einmal _italic text_.\n\n- Listenpunkt 1\n- Listenpunkt 2\n- Listenpunkt 3\n\n1. Listenpunkt 1\n2. Listenpunkt 2\n3. Listenpunkt 3 \n\n das ist ein zwischen Text \n---\n\n> Zitat"
+                  }
+                />
               </ScrollableContainer>
             </Container>
           </DefaultProperties>
