@@ -1,4 +1,4 @@
-import {Canvas, useThree} from '@react-three/fiber';
+import {Canvas} from '@react-three/fiber';
 import {Root, Container, Text, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
 import { PointerEvents } from '@react-three/xr';
 import React from 'react';
@@ -19,13 +19,8 @@ const scrollRef = [
   React.createRef(),
   React.createRef()
 ];
-let state = null;
 const displayData = [];
 let reloadCount = 0;
-
-function ThreeState() {
-  state = useThree();
-}
 
 export default function App() {
 
@@ -63,7 +58,6 @@ export default function App() {
 
   return (
     <Canvas style={{ position: "absolute", touchAction: 'none' }} gl={{ localClippingEnabled: true }}>
-      <ThreeState />
       <PointerEvents />
       <Root backgroundColor="#42258d" sizeX={8} sizeY={6} flexDirection="row" borderRadius={10} padding={10} gap={10}>
         <FontFamilyProvider inter={{ normal: 'inter-normal.json', bold: 'Inter_18pt-Bold-msdf.json', 'semi-bold': 'Inter_18pt-SemiBold-msdf.json' }} italic={{ normal: 'InterTight-Italic-msdf.json' }}>
@@ -81,6 +75,8 @@ export default function App() {
                 <BulletPointList items={items} />
                 <Separator />
                 <OrderedList items={items} />
+                <Separator />
+                <OrderedList items={items} startIndex={4} />
                 <Separator />
                 <Citation>&#34;Citation text&#34;</Citation>
                 <Separator />
@@ -143,6 +139,7 @@ export default function App() {
             >
               <Container flexShrink={0} flexGrow={1} flexDirection="column" padding={10} gap={10} alignItems="flex-start" alignContent="flex-start">
                 <Heading>{displayData[2]}</Heading>
+                <Heading level={3}>Heading Level 3</Heading>
                 <Subtitle>{displayData[3]}</Subtitle>
                 <TextBlock ref={textRef}>{displayData[1]}</TextBlock>
               </Container>

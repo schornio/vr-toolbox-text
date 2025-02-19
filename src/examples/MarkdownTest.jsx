@@ -1,21 +1,13 @@
-import {Canvas, useThree} from '@react-three/fiber';
+import {Canvas} from '@react-three/fiber';
 import {Root, Container, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
 import { PointerEvents } from '@react-three/xr';
 import React from 'react';
 import ScrollableContainer from '@/src/component/ScrollableContainer';
 import MarkdownParser from '@/src/component/MarkdownParser';
 
-
-let state = null;
-
-function ThreeState() {
-  state = useThree();
-}
-
 export default function App() {
   return (
     <Canvas style={{ position: "absolute", touchAction: 'none' }} gl={{ localClippingEnabled: true }}>
-      <ThreeState />
       <PointerEvents />
       <Root backgroundColor="#42258d" sizeX={8} sizeY={6} flexDirection="row" borderRadius={10} padding={10} gap={10}>
         <FontFamilyProvider
@@ -40,23 +32,27 @@ export default function App() {
                 scrollToEnd={false}
               >
                 <MarkdownParser>
-                  {`# Überschrift
+                  {`# Überschrift _italic text_
                   ## Unterüberschrift
                   Normaler Text hier. I just love **bold text**. Und noch einmal _italic + **bold** text_.
                   
                   - Listenpunkt 1
-                  - Listenpunkt 2
                   - Listenpunkt 3
+                  - Listenpunkt 2 **bold text**
                   
                   1. Listenpunkt 1
                   2. Listenpunkt 2
-                  3. Listenpunkt 3
+                  3. Listenpunkt 3 **bold text**
                   
                   das ist ein zwischen Text
+
+                  4. Listenpunkt 4
+                  5. Listenpunkt 5
                   
                   ---
                   
-                  > Zitat`}
+                  > Zitat
+                  > line 2 with **bold text**`}
                 </MarkdownParser>
               </ScrollableContainer>
             </Container>

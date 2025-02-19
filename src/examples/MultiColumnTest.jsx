@@ -1,18 +1,13 @@
-import {Canvas, useThree} from '@react-three/fiber';
-import {Root, Container, Text, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
+import {Canvas} from '@react-three/fiber';
+import {Root, Container, FontFamilyProvider, DefaultProperties} from '@react-three/uikit';
 import { PointerEvents } from '@react-three/xr';
 import React from 'react';
 import MultiColumnText from '@/src/component/MultiColumnText';
 import ScrollableContainer from '@/src/component/ScrollableContainer';
 import dynamicTextLoader from '@/src/services/dynamicTextLoader';
 
-let state = null;
 const displayData = [];
 let reloadCount = 0;
-
-function ThreeState() {
-  state = useThree();
-}
 
 export default function App() {
   let [count, setCount] = React.useState(0);
@@ -39,7 +34,6 @@ export default function App() {
 
   return (
     <Canvas style={{ position: "absolute", touchAction: 'none' }} gl={{ localClippingEnabled: true }}>
-      <ThreeState />
       <PointerEvents />
       <Root backgroundColor="#42258d" sizeX={8} sizeY={6} flexDirection="row" borderRadius={10} padding={10} gap={10}>
         <FontFamilyProvider inter={{ normal: 'inter-normal.json', bold: 'Inter_18pt-Bold-msdf.json', 'semi-bold': 'Inter_18pt-SemiBold-msdf.json' }} italic={{ normal: 'InterTight-Italic-msdf.json' }}>
