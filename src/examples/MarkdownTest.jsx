@@ -24,7 +24,10 @@ export default function App() {
               bold: 'Inter_18pt-Bold-msdf.json',
               'semi-bold': 'Inter_18pt-SemiBold-msdf.json'
             }}
-            italic={{ normal: 'Inter_18pt-Italic-msdf.json' }}
+            italic={{
+              normal: 'Inter_18pt-Italic-msdf.json',
+              bold: 'Inter_18pt-BoldItalic-msdf.json'
+            }}
         >
           <DefaultProperties fontFamily="inter">
             <Container flexGrow={1} backgroundColor="#9a398d" flexDirection="row" padding={10} gap={10}>
@@ -36,11 +39,25 @@ export default function App() {
                 flexDirection="row"
                 scrollToEnd={false}
               >
-                <MarkdownParser 
-                  markdown={
-                    "# Überschrift\n## Unterüberschrift\nNormaler Text hier. I just love **bold text**. Und noch einmal _italic text_.\n\n- Listenpunkt 1\n- Listenpunkt 2\n- Listenpunkt 3\n\n1. Listenpunkt 1\n2. Listenpunkt 2\n3. Listenpunkt 3 \n\n das ist ein zwischen Text \n---\n\n> Zitat"
-                  }
-                />
+                <MarkdownParser>
+                  {`# Überschrift
+                  ## Unterüberschrift
+                  Normaler Text hier. I just love **bold text**. Und noch einmal _italic + **bold** text_.
+                  
+                  - Listenpunkt 1
+                  - Listenpunkt 2
+                  - Listenpunkt 3
+                  
+                  1. Listenpunkt 1
+                  2. Listenpunkt 2
+                  3. Listenpunkt 3
+                  
+                  das ist ein zwischen Text
+                  
+                  ---
+                  
+                  > Zitat`}
+                </MarkdownParser>
               </ScrollableContainer>
             </Container>
           </DefaultProperties>

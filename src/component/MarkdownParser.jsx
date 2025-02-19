@@ -4,10 +4,11 @@ import React from 'react';
 import BulletPointList from '@/src/component/BulletPointList';
 import OrderedList from '@/src/component/OrderedList';
 
-const MarkdownParser = ({ markdown, fontFamily }) => {
+const MarkdownParser = ({ children, fontFamily }) => {
   const parseMarkdown = (text) => {
     const elements = [];
-    const lines = text.split('\n');
+    const lines = text.split('\n').map((item) => item.trim());
+    
 
     const parseInlineStyles = (text) => {
       let parts = [];
@@ -27,35 +28,37 @@ const MarkdownParser = ({ markdown, fontFamily }) => {
         }
 
         if (!match) {
+          const displayText = text.slice(currentIndex);
+          
           parts.push(
-            <Text key={currentIndex}>
-              {text.slice(currentIndex)}
+            <Text key={currentIndex} paddingRight={displayText.slice(-1) === ' ' ? 5 : 0} paddingLeft={displayText.slice(0, 1) === ' ' ? 5 : 0}>
+              {displayText}
             </Text>
           );
           break;
         }
 
         if (match.index > 0) {
-            const preText = text.slice(currentIndex, currentIndex + match.index);
-            parts.push(
-              <Text key={`pre-${currentIndex}`} paddingRight={preText.slice(-1) === ' ' ? 5 : 0}>
-                {preText}
-              </Text>
-            );
+          const preText = text.slice(currentIndex, currentIndex + match.index);
+          parts.push(
+            <Text key={`pre-${currentIndex}`} paddingRight={preText.slice(-1) === ' ' ? 5 : 0} paddingLeft={preText.slice(0, 1) === ' ' ? 5 : 0}>
+              {preText}
+            </Text>
+          );
         }
 
         const content = match[2];
         if (isBold) {
           parts.push(
-            <Text key={`bold-${currentIndex}`} fontWeight="bold">
-                {content}
-            </Text>
+            <DefaultProperties key={`bold-${currentIndex}`} fontWeight="bold">
+                {parseInlineStyles(content)}
+            </DefaultProperties>
           );
         } else {
           parts.push(
-            <Text key={`italic-${currentIndex}`} fontFamily="italic">
-                {content}
-            </Text>
+            <DefaultProperties key={`italic-${currentIndex}`} fontFamily="italic">
+                {parseInlineStyles(content)}
+            </DefaultProperties>
           );
         }
 
@@ -131,6 +134,7 @@ const MarkdownParser = ({ markdown, fontFamily }) => {
         while (currentIndex < lines.length) {
           const ulMatch = lines[currentIndex].match(/^[\*\-\+]\s+(.+)/);
           const olMatch = lines[currentIndex].match(/^\d+\.\s+(.+)/);
+          
   
           if (ulMatch && (!currentList || currentList === 'ul')) {
             ulItems.push(ulMatch[1]);
@@ -144,6 +148,7 @@ const MarkdownParser = ({ markdown, fontFamily }) => {
             break;
           }
         }
+        
 
         if (ulItems.length > 0) {
             elements.push(<BulletPointList items={ulItems} />);    
@@ -203,7 +208,7 @@ const MarkdownParser = ({ markdown, fontFamily }) => {
       gap={4}
       padding={10}
     >
-      {parseMarkdown(markdown)}
+      {parseMarkdown(children)}
     </Container>
   );
 };
