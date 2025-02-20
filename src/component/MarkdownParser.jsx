@@ -5,6 +5,7 @@ import BulletPointList from '@/src/component/BulletPointList';
 import OrderedList from '@/src/component/OrderedList';
 import Heading from '@/src/component/Heading';
 import Citation from '@/src/component/Citation';
+import ImageBlock from './ImageBlock';
 
 const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
   const parseMarkdown = (text) => {
@@ -17,16 +18,41 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
       let currentIndex = 0;
 
       while (currentIndex < text.length) {
-        const boldMatch = text.slice(currentIndex).match(/(\*\*|__)(.*?)\1/);
+        const boldAndItalicMatch = text.slice(currentIndex).match(/(\*\*\*|___)(.*?)\1/);
+        const boldMatch = text.slice(currentIndex).match(/(\*\*(?!\*)|__(?!_))(.*?)\1/);
         const italicMatch = text.slice(currentIndex).match(/(\*(?!\*)|_(?!_))(.*?)\1/);
+        const linkMatch = text.slice(currentIndex).match(/\[([^\]]+)\]\(([^)]+)\)/);
+        const imageMatch = text.slice(currentIndex).match(/!\[([^\]]*)\]\(([^)]+)\)/);
+
+        const boldItalicIndex = boldAndItalicMatch ? boldAndItalicMatch.index : text.length + 1;
+        const boldIndex = boldMatch ? boldMatch.index : text.length + 1;
+        const italicIndex = italicMatch ? italicMatch.index : text.length + 1;
+        const linkIndex = linkMatch ? linkMatch.index : text.length + 1;
+        const imageIndex = imageMatch ? imageMatch.index : text.length + 1;
+        const minIndex = Math.min(boldIndex, italicIndex, boldItalicIndex, linkIndex, imageIndex);
 
         let match = null;
         let isBold = false;
-        if (boldMatch && (!italicMatch || boldMatch.index < italicMatch.index)) {
+        let isItalic = false;
+        let isLink = false;
+        let isImage = false;
+
+        if (imageMatch && imageIndex === minIndex) {
+          match = imageMatch;
+          isImage = true;
+        } else if (linkMatch && linkIndex === minIndex) {
+          match = linkMatch;
+          isLink = true;
+        } else if (boldAndItalicMatch && boldItalicIndex === minIndex) {
+          match = boldAndItalicMatch;
+          isBold = true;
+          isItalic = true;
+        } else if (boldMatch && boldIndex === minIndex) {
           match = boldMatch;
           isBold = true;
-        } else if (italicMatch) {
+        } else if (italicMatch && italicIndex === minIndex) {
           match = italicMatch;
+          isItalic = true;
         }
 
         if (!match) {
@@ -41,6 +67,9 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
           break;
         }
 
+        const content = (isLink || isImage) ? match[1] : match[2];
+        const url = (isLink || isImage) ? match[2] : null;
+
         if (match.index > 0) {
           const displayText = text.slice(currentIndex, currentIndex + match.index);
           const right = displayText.slice(-1) === ' ' ? 5 : 0;
@@ -52,18 +81,47 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
           );
         }
 
-        const content = match[2];
-        if (isBold) {
+        if (isBold && isItalic) {
+          parts.push(
+            <DefaultProperties 
+              key={`bold-italic-${currentIndex}`} 
+              fontWeight="bold"
+              fontFamily="italic"
+            >
+              {parseInlineStyles(content)}
+            </DefaultProperties>
+          );
+        } else if (isBold) {
           parts.push(
             <DefaultProperties key={`bold-${currentIndex}`} fontWeight="bold">
                 {parseInlineStyles(content)}
             </DefaultProperties>
           );
-        } else {
+        } else if (isItalic) {
           parts.push(
             <DefaultProperties key={`italic-${currentIndex}`} fontFamily="italic">
                 {parseInlineStyles(content)}
             </DefaultProperties>
+          );
+        } else if (isLink) {
+          parts.push(
+            <DefaultProperties 
+              key={`link-${currentIndex}`} 
+              color="#d81b60"
+              textDecoration="underline"
+            >
+              <Container onClick={() => window.open(url, '_blank')} cursor="pointer">
+                {parseInlineStyles(content)}
+              </Container>
+            </DefaultProperties>
+          );
+        } else if (isImage) {
+          parts.push(
+            <ImageBlock
+              key={`image-${currentIndex}`}
+              src={url}
+              caption={content}
+            />
           );
         }
 
@@ -71,7 +129,7 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
       }
 
       return (
-        <Container flexDirection="row">
+        <Container key={`inline-${currentIndex}`} flexDirection="row" flexWrap="wrap" alignItems="baseline">
           {parts}
         </Container>
       );
@@ -136,10 +194,10 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
         
 
         if (ulItems.length > 0) {
-            elements.push(<BulletPointList items={ulItems} parseMarkdown />);    
+            elements.push(<BulletPointList key={`ul-${index}`} items={ulItems} parseMarkdown />);    
         }
         if (olItems.length > 0) {
-            elements.push(<OrderedList items={olItems} startIndex={listLabel} parseMarkdown />);    
+            elements.push(<OrderedList key={`ol-${index}`} items={olItems} startIndex={listLabel} parseMarkdown />);    
         }
       } else if (blockquoteMatch) {
 
@@ -162,6 +220,7 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
 
         elements.push(
           <Citation
+            key={`citation-${index}`}
             parseMarkdown={true}
           >
             {quoteText}
@@ -169,18 +228,19 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
         );
       } else if (hrMatch) {
         elements.push(
-          <Container key={index} marginVertical={10}>
-            <Separator />
+          <Container key={`hr-container-${index}`} marginVertical={10}>
+            <Separator key={`hr-${index}`} />
           </Container>
         );
       } else if (line.trim() !== '') {
         if (formatNormalText) {
           elements.push(
             <DefaultProperties  
+              key={`normal-text-props-${index}`}
               fontSize={14}
               fontFamily={fontFamily}
             >
-              <Container key={index} marginBottom={4}>
+              <Container key={`normal-text-${index}`} marginBottom={4}>
                   {parseInlineStyles(line)}
               </Container>
             </DefaultProperties >
@@ -199,6 +259,7 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
   if (formatNormalText) {
     return (
       <Container
+        key={`container-${children.length}`}
         flexDirection="column"
         gap={4}
         padding={10}

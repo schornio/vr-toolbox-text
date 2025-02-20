@@ -34,22 +34,22 @@ export default function App() {
                 <MarkdownParser>
                   {`# Überschrift _italic text_
                   ## Unterüberschrift
-                  Normaler Text hier. I just love **bold text**. Und noch einmal _italic + **bold** text_.
+                  Normaler Text hier. I just love **bold text**. Und noch einmal _italic + **bold** text_. Und das ganze nochmal ***gleichzeitig***.
+                  
+                  ---
                   
                   - Listenpunkt 1
                   - Listenpunkt 3
                   - Listenpunkt 2 **bold text**
                   
                   1. Listenpunkt 1
-                  2. Listenpunkt 2
-                  3. Listenpunkt 3 **bold text**
+                  2. Listenpunkt 2 **bold text**
                   
-                  das ist ein zwischen Text
+                  das ist ein zwischen Text ![Test image](1694078376509.jpg) mit einem Bild
+                  My favorite website is [schorn.io](https://www.schorn.io/de). Please test this link.
 
+                  3. Listenpunkt 3
                   4. Listenpunkt 4
-                  5. Listenpunkt 5
-                  
-                  ---
                   
                   > Zitat
                   > line 2 with **bold text**`}
