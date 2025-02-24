@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-three/fiber": "^9.0.4",
+    "@react-three/handle": "^6.6.6",
     "@react-three/uikit": "^0.8.7",
     "@react-three/uikit-default": "^0.8.7",
     "@react-three/uikit-lucide": "^0.8.7",
