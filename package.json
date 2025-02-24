@@ -4,21 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@react-three/fiber": "^8.17.10",
-    "@react-three/uikit": "^0.8.3",
+    "@react-three/fiber": "^9.0.4",
+    "@react-three/uikit": "^0.8.7",
     "@react-three/uikit-default": "^0.8.7",
     "@react-three/uikit-lucide": "^0.8.7",
-    "@react-three/xr": "^6.4.5",
+    "@react-three/xr": "^6.6.6",
     "@types/three": "^0.169.0",
-    "next": "14.2.17",
-    "react": "^18",
-    "react-dom": "^18",
-    "three": "^0.170.0"
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.173.0"
   },
   "devDependencies": {
     "@types/node": "^20",

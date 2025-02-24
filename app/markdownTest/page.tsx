@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import MarkdownTest from '@/src/examples/MarkdownTest'
+import MarkdownTest from "@/src/examples/MarkdownTest";
+import { EnterVRButton } from "@/src/component/EnterVRButton";
 
 export default function Home() {
   return (
-    <MarkdownTest />
+    <>
+      <EnterVRButton />
+      <MarkdownTest />
+    </>
   );
 }
