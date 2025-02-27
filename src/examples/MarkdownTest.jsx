@@ -52,7 +52,18 @@ export default function App() {
                   4. Listenpunkt 4
                   
                   > Zitat
-                  > line 2 with **bold text**`}
+                  > line 2 with **bold text**
+                  
+                  | Spalte 1 | Spalte 2 | Spalte 3 |
+                  |----------|:--------:|---------:|
+                  | Links    | Zentriert| Rechts   |
+                  | Text     | Text     | Text     |
+                  
+                  | a | b | c | d |
+                  | - | :- | -: | :-: |
+                  | e | f |
+                  | g | h | i | j | k |
+                  `}
                 </MarkdownParser>
               </ScrollableContainer>
             </Container>

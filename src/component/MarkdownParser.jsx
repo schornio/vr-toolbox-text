@@ -1,6 +1,8 @@
 import { Container, Text, DefaultProperties } from '@react-three/uikit';
 import { Separator } from '@react-three/uikit-default';
 import { fromMarkdown } from 'mdast-util-from-markdown';
+import { gfmTable } from 'micromark-extension-gfm-table';
+import { gfmTableFromMarkdown } from 'mdast-util-gfm-table';
 import React from 'react';
 import BulletPointList from '@/src/component/BulletPointList';
 import OrderedList from '@/src/component/OrderedList';
@@ -23,7 +25,10 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
   }
   
   const parseMarkdown = (text) => {
-    const tree = fromMarkdown(text);
+    const tree = fromMarkdown(text, {
+      extensions: [gfmTable()],
+      mdastExtensions: [gfmTableFromMarkdown()]
+    });
     setKey(tree);
     return renderNode(tree, text);
   }
@@ -167,6 +172,53 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
         return (
           <Container key={`container-${node.key}`} marginVertical={10}>
             <Separator />
+          </Container>
+        );
+
+      case 'table':
+        let columnCount = node.children[0].children.length;
+        for (const row of node.children) {
+          if (row.children.length > columnCount) {
+            columnCount = row.children.length;
+          }
+        }
+        return (
+          <Container 
+            key={`table-${node.key}`} 
+            flexDirection="column"
+            marginVertical={10}
+            borderWidth={0.6}
+            borderColor="#ec407a"
+          >
+            {node.children.map((row, rowIndex) => (
+              <Container 
+                key={`row-${node.key}-${rowIndex}`}
+                flexDirection="row"
+                backgroundColor={rowIndex === 0 ? "#fce4ec" : undefined}
+              >
+                {Array.from({ length: columnCount }, (_, cellIndex) => (
+                  <Container
+                    key={`cell-${node.key}-${rowIndex}-${cellIndex}`}
+                    paddingX={10}
+                    paddingY={5}
+                    borderWidth={0.6}
+                    borderColor="#ec407a"
+                    justifyContent={node.align?.[cellIndex]?.replace('left', 'flex-start')?.replace('right', 'flex-end') || 'flex-start'}
+                    width={`${100 / columnCount}%`}
+                  >
+                    <DefaultProperties
+                      fontSize={14}
+                      fontFamily={fontFamily}
+                      fontWeight={rowIndex === 0 ? "bold" : "normal"}
+                    >
+                      {row.children[cellIndex]?.children[0] ? 
+                        renderNode(row.children[cellIndex].children[0], input) : 
+                        null}
+                    </DefaultProperties>
+                  </Container>
+                ))}
+              </Container>
+            ))}
           </Container>
         );
 
