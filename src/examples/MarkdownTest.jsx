@@ -46,7 +46,7 @@ export default function App() {
                   2. Listenpunkt 2 **bold text**
                   
                   das ist ein zwischen Text ![Test image](1694078376509.jpg) mit einem Bild
-                  My favorite website is [schorn.io](https://www.schorn.io/de). Please test this link.
+                  My favorite website is [schorn.io](https://www.schorn.io/de). Please test this link. Dies ist ein <u>unterstrichener **bold text**</u>.
 
                   3. Listenpunkt 3
                   4. Listenpunkt 4
@@ -54,12 +54,22 @@ export default function App() {
                   > Zitat
                   > line 2 with **bold text**
                   
-                  | Spalte 1 | Spalte 2 | Spalte 3 |
+                  | Spalte 1 _italic text_ <border>outline</border> | Spalte 2 | Spalte 3 |
                   |----------|:--------:|---------:|
                   | Links    | Zentriert| Rechts   |
-                  | Text     | Text     | Text     |
+                  | Text     | Text **bold text**    | Text     |
                   
-                  | a | b | c | d |
+                  | a <border>column</border> <header>transparent</header> | b | c | d |
+                  | - | :- | -: | :-: |
+                  | e | f |
+                  | g | h | i | j | k |
+                  
+                  | a <border>row</border> | b | c | d |
+                  | - | :- | -: | :-: |
+                  | e | f |
+                  | g | h | i | j | k |
+                  
+                  | a <border>all</border> | b | c | d |
                   | - | :- | -: | :-: |
                   | e | f |
                   | g | h | i | j | k |

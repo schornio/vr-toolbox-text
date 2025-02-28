@@ -33,17 +33,17 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
     return renderNode(tree, text);
   }
 
-  const renderNode = (node, input) => {
+  const renderNode = (node, input, parent = null, index = null) => {
     const nodeText = node.children ?
       node.children.map((item) => input.slice(item.position.start.offset, item.position.end.offset)).join('') :
       input.slice(node.position.start.offset, node.position.end.offset);
     
-    const getContent = () => {
+    const getContent = (contentNode = node) => {
       const content = [];
-      if (node.children) {
-        for (const child of node.children) {
-          content.push(renderNode(child, input));
-        }
+      if (contentNode.children) {
+        contentNode.children.forEach((child, childIndex) => {
+          content.push(renderNode(child, input, contentNode, childIndex));
+        });
       }
       return content;
     }
@@ -57,9 +57,8 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
             key={`heading-${node.key}`} 
             level={node.depth} 
             fontFamily={fontFamily}
-            parseMarkdown
           >
-            {nodeText}
+            {getContent()}
           </Heading>
         );
 
@@ -182,26 +181,45 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
             columnCount = row.children.length;
           }
         }
+        let borderType = 'all';
+        let headerColor = '#fce4ec';
+        const infoCell = node.children[0].children[0].children;
+        const infoIndex = infoCell.findIndex(child => child.type === 'html' && child.value === '<border>');
+        const headerIndex = infoCell.findIndex(child => child.type === 'html' && child.value === '<header>');
+        if (
+          infoIndex !== -1 &&
+          infoCell.length > infoIndex + 1
+        ) {
+          borderType = infoCell[infoIndex + 1].value;
+        }
+        if (
+          headerIndex !== -1 &&
+          infoCell.length > headerIndex + 1
+        ) {
+          headerColor = infoCell[headerIndex + 1].value;
+        }
         return (
           <Container 
             key={`table-${node.key}`} 
             flexDirection="column"
             marginVertical={10}
-            borderWidth={0.6}
+            borderXWidth={borderType === 'column' || borderType === 'all' ? 0.6 : borderType === 'outline' ? 1 : 0}
+            borderYWidth={borderType === 'row' || borderType === 'all' ? 0.6 : borderType === 'outline' ? 1 : 0}
             borderColor="#ec407a"
           >
             {node.children.map((row, rowIndex) => (
               <Container 
                 key={`row-${node.key}-${rowIndex}`}
                 flexDirection="row"
-                backgroundColor={rowIndex === 0 ? "#fce4ec" : undefined}
+                backgroundColor={rowIndex === 0 && headerColor !== 'transparent' ? headerColor : undefined}
               >
                 {Array.from({ length: columnCount }, (_, cellIndex) => (
                   <Container
                     key={`cell-${node.key}-${rowIndex}-${cellIndex}`}
                     paddingX={10}
                     paddingY={5}
-                    borderWidth={0.6}
+                    borderXWidth={borderType === 'column' || borderType === 'all' ? 0.6 : 0}
+                    borderYWidth={borderType === 'row' || borderType === 'all' ? 0.6 : 0}
                     borderColor="#ec407a"
                     justifyContent={node.align?.[cellIndex]?.replace('left', 'flex-start')?.replace('right', 'flex-end') || 'flex-start'}
                     width={`${100 / columnCount}%`}
@@ -211,9 +229,7 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
                       fontFamily={fontFamily}
                       fontWeight={rowIndex === 0 ? "bold" : "normal"}
                     >
-                      {row.children[cellIndex]?.children[0] ? 
-                        renderNode(row.children[cellIndex].children[0], input) : 
-                        null}
+                      {getContent(row.children[cellIndex])}
                     </DefaultProperties>
                   </Container>
                 ))}
@@ -221,6 +237,40 @@ const MarkdownParser = ({ children, fontFamily, formatNormalText = true }) => {
             ))}
           </Container>
         );
+
+      case 'html':
+        const wrapInner = () => {
+          if (parent && parent.children.length > index + 1) {
+            for (let i = index + 1; i < parent.children.length; i++) {
+              const nextNode = parent.children[i];
+              if (nextNode.type === 'html' && nextNode.value.includes('</u>')) {
+                break;
+              }
+              if (!node.children) node.children = [];
+              node.children.push(nextNode);
+            }
+            const content = getContent();
+            for (const child of node.children) {
+              child.type = 'hidden';
+            }
+            return content;
+          }
+        };
+        if (node.value.includes('<u>')) {
+          const content = wrapInner();
+          return (
+            <Container key={`underline-${node.key}`} flexDirection="row" flexWrap="wrap" borderBottomWidth={1} borderColor="#ec407a">
+              {content}
+            </Container>
+          );
+        }
+        if (node.value.includes('<border>') || node.value.includes('<header>')) {
+          wrapInner();
+        }
+        return null;
+
+      case 'hidden':
+        return null;
 
       default:
         console.warn('Unhandled node type:', node.type);
