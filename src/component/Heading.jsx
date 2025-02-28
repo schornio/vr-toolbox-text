@@ -13,33 +13,47 @@ const HEADING_SIZES = {
 
 export default function Heading({ children, level = 1, fontFamily, parseMarkdown = false }) {
   const fontSize = HEADING_SIZES[level] || HEADING_SIZES[1];
+  const isTextOnly = typeof children === 'string' || typeof children === 'number';
   
   return (
     <Container
       flexGrow={0}
       marginBottom={level === 1 ? 10 : level === 2 ? 8 : 6}
     >
-      {parseMarkdown ? (
-        <DefaultProperties 
-          fontWeight="bold" 
-          wordBreak="break-word" 
-          fontSize={fontSize} 
-          fontFamily={fontFamily}
-        >
-          <MarkdownParser formatNormalText={false}>
-            {children}
-          </MarkdownParser>
-        </DefaultProperties>
-      ) : (
-        <Text 
-          fontWeight="bold" 
-          wordBreak="break-word" 
-          fontSize={fontSize} 
-          fontFamily={fontFamily}
-        >
-          {children}
-        </Text>
-      )}
+      {
+        !isTextOnly ? (
+          <DefaultProperties 
+            fontWeight="bold" 
+            wordBreak="break-word" 
+            fontSize={fontSize} 
+            fontFamily={fontFamily}
+          >
+              {children}
+          </DefaultProperties>
+        ) : (
+          parseMarkdown ? (
+            <DefaultProperties 
+              fontWeight="bold" 
+              wordBreak="break-word" 
+              fontSize={fontSize} 
+              fontFamily={fontFamily}
+            >
+              <MarkdownParser formatNormalText={false}>
+                {children}
+              </MarkdownParser>
+            </DefaultProperties>
+          ) : (
+            <Text 
+                fontWeight="bold" 
+                wordBreak="break-word" 
+                fontSize={fontSize} 
+                fontFamily={fontFamily}
+            >
+              {children}
+            </Text>
+          )
+        )
+      }
     </Container>
   )
 }

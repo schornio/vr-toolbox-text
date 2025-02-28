@@ -19,18 +19,34 @@ const ScrollableContainer = React.forwardRef((
   }, ref) => {
   if (!padding) padding = 0;
   const scrollRef = ref ?? React.createRef();
+  const containerRef = React.useRef(null);
+
   const updateScrollbar = async () => {
-    const scrollItem = scrollRef;
+    const scrollItem = containerRef;
     if (scrollItem && scrollItem.current) {
       await delay(500);
       if (scrollItem.current && scrollItem.current.maxScrollPosition.value[1]) {
         await delay(100);
         if (scrollItem.current.scrollPosition.value[1] !== scrollItem.current.maxScrollPosition.value[1]) {
-          scrollItem.current.scrollPosition.value[1] = scrollItem.current.maxScrollPosition.value[1];
+          scrollItem.current.scrollPosition.value = [
+            scrollItem.current.scrollPosition.value[0],
+            scrollItem.current.maxScrollPosition.value[1]
+          ];
         }
       }
     }
   }
+
+  React.useImperativeHandle(ref, () => ({
+    updateScroll: () => {
+      if (scrollRef.current) {
+        updateScrollbar();
+      }
+    },
+    get scrollToEnd() {
+      return scrollToEnd
+    }
+  }), [scrollRef.current]);
 
   if (scrollToEnd) {
     updateScrollbar();
@@ -38,7 +54,7 @@ const ScrollableContainer = React.forwardRef((
 
   return (
     <Container
-      ref={scrollRef}
+      ref={containerRef}
       flexGrow={1}
       alignItems="flex-start"
       alignContent="flex-start"

@@ -11,44 +11,30 @@ import TextBlock from '@/src/component/TextBlock';
 import ImageBlock from '@/src/component/ImageBlock';
 import Citation from '@/src/component/Citation';
 import ScrollableContainer from '@/src/component/ScrollableContainer';
-import dynamicTextLoader, {getRandomTextIndex} from '@/src/services/dynamicTextLoader';
-
-const textRef = React.createRef();
-const scrollRef = [
-  React.createRef(),
-  React.createRef(),
-  React.createRef()
-];
-const displayData = [];
-let reloadCount = 0;
+import DynamicText from '@/src/component/DynamicText';
+import {getRandomTextIndex} from '@/src/services/dynamicTextLoader';
 
 export default function App() {
-
-  let [count, setCount] = React.useState(0);
-  if (reloadCount === 0) {
-    const reloadText = (text) => {
-      if (count < text.length) {
-        count = text.length;
-        setCount(count);
-      }
-    };
-
-    const dynamicTextIndexList = [
-      10,
-      3,
-      11,
-      6,
-      getRandomTextIndex()
-    ];
-    for (let i = 0; i < dynamicTextIndexList.length; i++) {
-      displayData.push('');
-      dynamicTextLoader(dynamicTextIndexList[i], (text) => {
-        displayData[i] = text;
-        reloadText(text);
-      });
-    }
-  }
-  reloadCount++;
+  const scrollRef = [
+    React.useRef(null),
+    React.useRef(null),
+    React.useRef(null)
+  ];
+  let [widthColumn1, setWidthColumn1] = React.useState(10);
+  const handleResizeColumn1 = React.useCallback((newWidth) => {
+    widthColumn1 = newWidth;
+    setWidthColumn1(widthColumn1);
+  }, []);
+  let [widthColumn2, setWidthColumn2] = React.useState(10);
+  const handleResizeColumn2 = React.useCallback((newWidth) => {
+    widthColumn2 = newWidth;
+    setWidthColumn2(widthColumn2);
+  }, []);
+  let [widthColumn3, setWidthColumn3] = React.useState(10);
+  const handleResizeColumn3 = React.useCallback((newWidth) => {
+    widthColumn3 = newWidth;
+    setWidthColumn3(widthColumn3);
+  }, []);
 
   const items = [
     "1234567890",
@@ -64,7 +50,9 @@ export default function App() {
           <DefaultProperties fontFamily="inter">
             <Container flexGrow={1} backgroundColor="#9a398d" flexDirection="row" padding={10} gap={10}>
               <ScrollableContainer
-                minWidth="10%"
+                ref={scrollRef[0]}
+                minWidth={widthColumn1 + 30}
+                maxWidth="49%"
                 backgroundColor="white"
                 backgroundOpacity={0.5}
                 padding={10}
@@ -80,11 +68,14 @@ export default function App() {
                 <Separator />
                 <Citation>&#34;Citation text&#34;</Citation>
                 <Separator />
-                <TextBlock>{displayData[4]}</TextBlock>
+                <Container flexGrow={1}>
+                  <TextBlock onResize={handleResizeColumn1}><DynamicText dynamicTextIndex={getRandomTextIndex()} scrollRef={scrollRef[0]} /></TextBlock>
+                </Container>
               </ScrollableContainer>
               <ScrollableContainer
                 ref={scrollRef[1]}
-                minWidth="10%"
+                minWidth={widthColumn2 + 30}
+                maxWidth="49%"
                 backgroundColor="white"
                 backgroundOpacity={0.5}
                 padding={10}
@@ -127,21 +118,23 @@ export default function App() {
                     </TooltipContent>
                   </Tooltip>
                 </Container>
-                <TextBlock>{displayData[0]}</TextBlock>
+                <Container flexGrow={1}>
+                  <TextBlock onResize={handleResizeColumn2}><DynamicText dynamicTextIndex={10} scrollRef={scrollRef[1]} /></TextBlock>
+                </Container>
               </ScrollableContainer>
             </Container>
             <ScrollableContainer
               ref={scrollRef[2]}
               backgroundColor="#9a398d"
-              minWidth={textRef.current && textRef.current.size.v ? textRef.current.size.v[0] + 30 : 30}
+              minWidth={widthColumn3 + 30}
               maxWidth="30%"
               scrollToEnd={true}
             >
               <Container flexShrink={0} flexGrow={1} flexDirection="column" padding={10} gap={10} alignItems="flex-start" alignContent="flex-start">
-                <Heading>{displayData[2]}</Heading>
+                <Heading><DynamicText dynamicTextIndex={11} scrollRef={scrollRef[2]} /></Heading>
                 <Heading level={3}>Heading Level 3</Heading>
-                <Subtitle>{displayData[3]}</Subtitle>
-                <TextBlock ref={textRef}>{displayData[1]}</TextBlock>
+                <Subtitle><DynamicText dynamicTextIndex={6} scrollRef={scrollRef[2]} /></Subtitle>
+                <TextBlock onResize={handleResizeColumn3}><DynamicText dynamicTextIndex={3} scrollRef={scrollRef[2]} /></TextBlock>
               </Container>
             </ScrollableContainer>
           </DefaultProperties>

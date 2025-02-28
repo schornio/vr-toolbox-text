@@ -3,6 +3,7 @@ import React from 'react';
 import MarkdownParser from '@/src/component/MarkdownParser';
 
 export default function Citation({ children, parseMarkdown = false }) {
+  const isTextOnly = typeof children === 'string' || typeof children === 'number';
   return (
     <Container
       flexGrow={0}
@@ -21,15 +22,21 @@ export default function Citation({ children, parseMarkdown = false }) {
           }}
         >
           <DefaultProperties fontFamily="italic" color="#d81b60" wordBreak="break-word">
-            {parseMarkdown ? (
-              <MarkdownParser formatNormalText={false}>
-                {children}
-              </MarkdownParser>
-            ) : (
-              <Text>
-                {children}
-              </Text>
-            )}
+            {
+              !isTextOnly ? (
+                children
+              ) : (
+                parseMarkdown ? (
+                  <MarkdownParser formatNormalText={false}>
+                    {children}
+                  </MarkdownParser>
+                ) : (
+                  <Text>
+                    {children}
+                  </Text>
+                )
+              )
+            }
           </DefaultProperties>
         </FontFamilyProvider>
       </Container>
